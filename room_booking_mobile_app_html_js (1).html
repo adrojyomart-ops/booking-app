@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room Booking App</title>
+<style>
+body { font-family: Arial; margin:0; padding:10px; background:#f5f5f5; }
+.container { max-width:500px; margin:auto; background:#fff; padding:15px; border-radius:10px; }
+h2 { text-align:center; }
+input, select, textarea, button {
+  width:100%; padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc;
+}
+button { background:#28a745; color:#fff; font-weight:bold; }
+.whatsapp { background:#25D366; }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Room Booking</h2>
+
+<label>Guest Name *</label>
+<input type="text" id="guestName" required>
+
+<label>Mobile No *</label>
+<input type="text" id="customerMobile" required>
+
+<label>Email (Optional)</label>
+<input type="email" id="email">
+
+<label>Booking Date</label>
+<input type="date" id="bookingDate" readonly>
+
+<label>Arrival Date</label>
+<input type="date" id="arrival">
+
+<label>Departure Date</label>
+<input type="date" id="departure">
+
+<label>No. of Pax</label>
+<input type="number" id="pax">
+
+<label>Room Category</label>
+<select id="category">
+<option>Classic</option>
+<option>Tripple Family</option>
+<option>Suite</option>
+<option>Presidential Room</option>
+</select>
+
+<label>Room Price (Editable)</label>
+<input type="number" id="roomPrice" oninput="calculatePrice()">
+
+<label>Plan</label>
+<select id="plan" onchange="calculatePrice()">
+<option value="1">EP (Room Only)</option>
+<option value="1.2">CP (+Breakfast)</option>
+<option value="1.5">MAP (+Dinner)</option>
+<option value="2">AP (All Meals)</option>
+</select>
+
+<label>No. of Rooms</label>
+<input type="number" id="rooms" value="1" onchange="calculatePrice()">
+
+<label>Total Price</label>
+<input type="text" id="price" readonly>
+
+<label>Advance Received</label>
+<input type="number" id="advance" oninput="calculateBalance()">
+
+<label>Balance Amount</label>
+<input type="text" id="balance" readonly>
+
+<label>Staff Mobile</label>
+<input type="text" id="staffMobile">
+
+<label>Remarks</label>
+<textarea id="remarks"></textarea>
+
+<button onclick="saveBooking()">Save Booking</button>
+<button class="whatsapp" onclick="sendCustomerWhatsApp()">Send WhatsApp to Customer</button>
+<button class="whatsapp" onclick="sendStaffWhatsApp()">Send WhatsApp to Staff</button>
+
+</div>
+
+<script>
+// Auto booking date
+document.getElementById("bookingDate").value = new Date().toISOString().split('T')[0];
+
+function calculatePrice(){
+  let price = document.getElementById("roomPrice").value || 0;
+  let plan = document.getElementById("plan").value;
+  let rooms = document.getElementById("rooms").value;
+
+  let total = price * plan * rooms;
+  document.getElementById("price").value = total;
+  calculateBalance();
+}
+
+function calculateBalance(){
+  let total = document.getElementById("price").value || 0;
+  let advance = document.getElementById("advance").value || 0;
+
+  let balance = total - advance;
+  document.getElementById("balance").value = balance;
+}
+
+function validateFields(){
+  let name = guestName.value;
+  let mobile = customerMobile.value;
+
+  if(name === "" || mobile === ""){
+    alert("Guest Name and Mobile No are mandatory!");
+    return false;
+  }
+  return true;
+}
+
+function saveBooking(){
+  if(!validateFields()) return;
+
+  let booking = {
+    guestName: guestName.value,
+    mobile: customerMobile.value,
+    email: email.value,
+    bookingDate: bookingDate.value,
+    arrival: arrival.value,
+    departure: departure.value,
+    pax: pax.value,
+    category: category.value,
+    roomPrice: roomPrice.value,
+    plan: plan.options[plan.selectedIndex].text,
+    rooms: rooms.value,
+    total: price.value,
+    advance: advance.value,
+    balance: balance.value,
+    remarks: remarks.value
+  };
+
+  localStorage.setItem("booking_"+Date.now(), JSON.stringify(booking));
+  alert("Booking Saved!");
+}
+
+function sendCustomerWhatsApp(){
+  if(!validateFields()) return;
+
+  let msg = `Dear Mr./Ms. ${guestName.value},
+Contact No: ${customerMobile.value}
+
+Greetings from Hotel Ravi Palace, Agra 🙏
+
+Your booking details are as follows:
+Check-in: ${arrival.value}
+Check-out: ${departure.value}
+Rooms: ${rooms.value} ${category.value} (for ${pax.value} Guests)
+Rate: ₹${roomPrice.value} per room per night
+
+Total Amount: ₹${price.value}
+Advance Paid: ₹${advance.value}
+Balance Amount: ₹${balance.value}
+
+Kindly note: All payments must be cleared at the time of check-in.
+
+For any assistance, feel free to contact us at: +91 7409649313
+
+We look forward to welcoming you 😊`;
+
+  let customer = customerMobile.value;
+  let url = `https://wa.me/91${customer}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+function sendStaffWhatsApp(){
+  if(!validateFields()) return;
+
+  let msg = `New Booking Alert:\nGuest: ${guestName.value}\nMobile: ${customerMobile.value}\nArrival: ${arrival.value}\nDeparture: ${departure.value}\nPax: ${pax.value}\nCategory: ${category.value}\nRoom Price: ₹${roomPrice.value}\nRooms: ${rooms.value}\nPlan: ${plan.options[plan.selectedIndex].text}\nTotal: ₹${price.value}\nAdvance: ₹${advance.value}\nBalance: ₹${balance.value}\nRemarks: ${remarks.value}`;
+
+  let staff = document.getElementById("staffMobile").value;
+  let url = `https://wa.me/91${staff}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+</script>
+
+</body>
+</html>
