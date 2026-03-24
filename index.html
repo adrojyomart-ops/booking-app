@@ -166,20 +166,33 @@ For any assistance, feel free to contact us at: +91 7409649313
 We look forward to welcoming you 😊`;
 
   let customer = customerMobile.value;
-  let url = `https://wa.me/91${customer}?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
-}
 
+  let url = `whatsapp://send?phone=91${customer}&text=${encodeURIComponent(msg)}`;
+  window.location.href = url;
+}
 function sendStaffWhatsApp(){
   if(!validateFields()) return;
 
-  let msg = `New Booking Alert:\nGuest: ${guestName.value}\nMobile: ${customerMobile.value}\nArrival: ${arrival.value}\nDeparture: ${departure.value}\nPax: ${pax.value}\nCategory: ${category.value}\nRoom Price: ₹${roomPrice.value}\nRooms: ${rooms.value}\nPlan: ${plan.options[plan.selectedIndex].text}\nTotal: ₹${price.value}\nAdvance: ₹${advance.value}\nBalance: ₹${balance.value}\nRemarks: ${remarks.value}`;
+  let msg = `New Booking Alert:
+Guest: ${guestName.value}
+Mobile: ${customerMobile.value}
+Arrival: ${arrival.value}
+Departure: ${departure.value}
+Pax: ${pax.value}
+Category: ${category.value}
+Room Price: ₹${roomPrice.value}
+Rooms: ${rooms.value}
+Plan: ${plan.options[plan.selectedIndex].text}
+Total: ₹${price.value}
+Advance: ₹${advance.value}
+Balance: ₹${balance.value}
+Remarks: ${remarks.value}`;
 
   let staff = document.getElementById("staffMobile").value;
-  let url = `https://wa.me/91${staff}?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
-}
-</script>
+
+  let url = `whatsapp://send?phone=91${staff}&text=${encodeURIComponent(msg)}`;
+  window.location.href = url;
+}</script>
 
 </body>
 </html>
